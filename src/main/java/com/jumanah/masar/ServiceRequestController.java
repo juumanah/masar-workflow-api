@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.server.ResponseStatusException;
 // 
 
+import jakarta.validation.Valid;
+
 //Hey u , hope u have a great life..//
 
 
@@ -46,7 +48,7 @@ public class ServiceRequestController {
     @PostMapping("/api/requests")
     @ResponseStatus(HttpStatus.CREATED)
     public ServiceRequest createRequest(
-            @RequestBody CreateServiceRequest input) {
+            @Valid @RequestBody CreateServiceRequest input) {
 
         long id = nextId.getAndIncrement();
 
