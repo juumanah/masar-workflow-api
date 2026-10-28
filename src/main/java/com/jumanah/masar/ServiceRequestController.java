@@ -5,6 +5,8 @@ package com.jumanah.masar;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.List;
+import java.util.Comparator;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,5 +55,11 @@ public class ServiceRequestController {
 
         return request;
     }
-
+      @GetMapping("/api/requests")
+public List<ServiceRequest> getAllRequests() {
+    return requests.values()
+            .stream()
+            .sorted(Comparator.comparing(ServiceRequest::id))
+            .toList();
+}
 }
