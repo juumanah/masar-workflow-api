@@ -14,6 +14,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+//now lets add get to retrieve one specific req..
+
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.server.ResponseStatusException;
+// 
+
 //Hey u , hope u have a great life..//
 
 
@@ -61,5 +67,20 @@ public List<ServiceRequest> getAllRequests() {
             .stream()
             .sorted(Comparator.comparing(ServiceRequest::id))
             .toList();
+}
+//retrieve 1 service req using id provided in url
+//ex: GET /api/request/1 this will seek or the req with id1 =)
+@GetMapping("/api/requests/{id}")
+public ServiceRequest getRequestById(@PathVariable("id") Long id) {
+    ServiceRequest request = requests.get(id);
+
+    if (request == null) {
+        throw new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "Request not found"
+        );
+    }
+
+    return request;
 }
 }
