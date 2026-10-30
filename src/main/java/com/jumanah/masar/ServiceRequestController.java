@@ -60,4 +60,15 @@ public class ServiceRequestController {
         //the service finds the req or throws a 404 if it doesn't exist
         return service.getRequestById(id);
     }
+    //approve the req using its id
+@PostMapping("/api/requests/{id}/approve")
+public ServiceRequest approveRequest(@PathVariable("id") Long id) {
+    return service.approveRequest(id);
+}
+
+//reject the req using its id
+@PostMapping("/api/requests/{id}/reject")
+public ServiceRequest rejectRequest(@PathVariable("id") Long id) {
+    return service.rejectRequest(id);
+}
 }

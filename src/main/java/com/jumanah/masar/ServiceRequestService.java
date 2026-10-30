@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import org.springframework.transaction.annotation.Transactional;
 //manage service reqs and store them in PostgreSQL
 @Service
 public class ServiceRequestService {
@@ -58,4 +59,28 @@ public class ServiceRequestService {
                 entity.getStatus()
         );
     }
+    //approve the req and save the change
+@Transactional
+public ServiceRequest approveRequest(Long id) {
+    ServiceRequestEntity entity = findRequest(id);
+    entity.approve();
+    return toResponse(entity);
+}
+
+//reject the req and save the change
+@Transactional
+public ServiceRequest rejectRequest(Long id) {
+    ServiceRequestEntity entity = findRequest(id);
+    entity.reject();
+    return toResponse(entity);
+}
+
+//find the saved req or return 404
+private ServiceRequestEntity findRequest(Long id) {
+    return repository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Request not found"
+            ));
+}
 }

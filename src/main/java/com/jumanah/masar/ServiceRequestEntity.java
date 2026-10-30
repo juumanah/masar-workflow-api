@@ -9,6 +9,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+
 // Represents one saved req in the database
 @Entity
 @Table(name = "service_requests")
@@ -32,7 +35,7 @@ public class ServiceRequestEntity {
     protected ServiceRequestEntity() {
     }
 
-    // New reqs always start with SUBMITTED status
+    //new reqs always start with SUBMITTED status
     public ServiceRequestEntity(String title, String description) {
         this.title = title;
         this.description = description;
@@ -54,4 +57,25 @@ public class ServiceRequestEntity {
     public String getStatus() {
         return status;
     }
+    //approve only a submitted req
+public void approve() {
+    ensureSubmitted();
+    this.status = "APPROVED";
+}
+
+//reject only a submitted req
+public void reject() {
+    ensureSubmitted();
+    this.status = "REJECTED";
+}
+
+//prevent changing a decision already made
+private void ensureSubmitted() {
+    if (!"SUBMITTED".equals(this.status)) {
+        throw new ResponseStatusException(
+                HttpStatus.CONFLICT,
+                "Only submitted requests can be approved or rejected"
+        );
+    }
+}
 }
