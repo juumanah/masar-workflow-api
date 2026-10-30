@@ -1,59 +1,61 @@
 package com.jumanah.masar;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-//manage service reqs and keep them in temporary memory
+//manage service reqs and store them in PostgreSQL
 @Service
 public class ServiceRequestService {
 
-    private final Map<Long, ServiceRequest> requests =
-            new ConcurrentHashMap<>();
+    private final ServiceRequestRepository repository;
 
-    private final AtomicLong nextId = new AtomicLong(1);
+    //spring provides the repository through this constructor
+    public ServiceRequestService(ServiceRequestRepository repository) {
+        this.repository = repository;
+    }
 
-    //give each req a unique id, store it, then return it
+    //save the req.. PostgreSQL generates its unique id
     public ServiceRequest createRequest(CreateServiceRequest input) {
-        long id = nextId.getAndIncrement();
-
-        ServiceRequest request = new ServiceRequest(
-                id,
+        ServiceRequestEntity entity = new ServiceRequestEntity(
                 input.title(),
-                input.description(),
-                "SUBMITTED"
+                input.description()
         );
 
-        requests.put(id, request);
-        return request;
+        ServiceRequestEntity saved = repository.save(entity);
+        return toResponse(saved);
     }
 
     //get all stored reqs ordered by id
     public List<ServiceRequest> getAllRequests() {
-        return requests.values()
+        return repository.findAll(Sort.by("id").ascending())
                 .stream()
-                .sorted(Comparator.comparing(ServiceRequest::id))
+                .map(this::toResponse)
                 .toList();
     }
 
     //find one req using its id
     public ServiceRequest getRequestById(Long id) {
-        ServiceRequest request = requests.get(id);
-
         //if the req doesn't exist, return 404
-        if (request == null) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "Request not found"
-            );
-        }
+        ServiceRequestEntity entity = repository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Request not found"
+                ));
 
-        return request;
+        return toResponse(entity);
+    }
+
+    //convert the database entity into the API response
+    private ServiceRequest toResponse(ServiceRequestEntity entity) {
+        return new ServiceRequest(
+                entity.getId(),
+                entity.getTitle(),
+                entity.getDescription(),
+                entity.getStatus()
+        );
     }
 }
