@@ -67,10 +67,11 @@ public void approve() {
     this.decidedAt = Instant.now();
 }
 
-//reject only a submitted req
-public void reject() {
+//reject a submitted req and record the reason
+public void reject(String reason) {
     ensureSubmitted();
     this.status = "REJECTED";
+    this.rejectionReason = reason.trim();
     this.decidedAt = Instant.now();
 }
 
@@ -89,6 +90,10 @@ private Instant createdAt;
 
 private Instant decidedAt;
 
+//why the req was rejected??
+@Column(columnDefinition = "text")
+private String rejectionReason;
+
 //set creation time before saving a new req
 @PrePersist
 protected void onCreate() {
@@ -101,5 +106,9 @@ public Instant getCreatedAt() {
 
 public Instant getDecidedAt() {
     return decidedAt;
+    
+}
+public String getRejectionReason() {
+    return rejectionReason;
 }
 }

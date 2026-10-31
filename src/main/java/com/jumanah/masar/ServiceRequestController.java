@@ -28,14 +28,16 @@ public class ServiceRequestController {
         this.service = service;
     }
 
-    //get req, run this method
+   
+    //return a fixed sample req
 @GetMapping("/api/requests/sample")
- public ServiceRequest getSampleRequest() {
+public ServiceRequest getSampleRequest() {
     return new ServiceRequest(
             1L,
             "New laptop",
             "A laptop for development work",
             "SUBMITTED",
+            null,
             null,
             null
     );
@@ -68,9 +70,12 @@ public ServiceRequest approveRequest(@PathVariable("id") Long id) {
     return service.approveRequest(id);
 }
 
-//reject the req using its id
+//oold: reject the req using its id
+//now: validate the reason, then reject the req
 @PostMapping("/api/requests/{id}/reject")
-public ServiceRequest rejectRequest(@PathVariable("id") Long id) {
-    return service.rejectRequest(id);
+public ServiceRequest rejectRequest(
+        @PathVariable("id") Long id,
+        @Valid @RequestBody RejectServiceRequest input) {
+    return service.rejectRequest(id, input);
 }
 }

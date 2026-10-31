@@ -1,8 +1,6 @@
 package com.jumanah.masar;
 // concise data type for holding data;defiining the data structure                 
-
 import java.time.Instant;
-
 //data returned by the API
 public record ServiceRequest(
         Long id,
@@ -10,5 +8,6 @@ public record ServiceRequest(
         String description,
         String status,
         Instant createdAt,
-        Instant decidedAt
+        Instant decidedAt,
+        String rejectionReason
 ) {}

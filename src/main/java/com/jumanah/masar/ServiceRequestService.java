@@ -52,6 +52,8 @@ public class ServiceRequestService {
 
     //old---convert the database entity into the API response
     //new---convert the saved entity into an API response
+
+//convert the saved entity into an api response
 private ServiceRequest toResponse(ServiceRequestEntity entity) {
     return new ServiceRequest(
             entity.getId(),
@@ -59,7 +61,8 @@ private ServiceRequest toResponse(ServiceRequestEntity entity) {
             entity.getDescription(),
             entity.getStatus(),
             entity.getCreatedAt(),
-            entity.getDecidedAt()
+            entity.getDecidedAt(),
+            entity.getRejectionReason()
     );
 }
     //approve the req and save the change
@@ -70,11 +73,12 @@ public ServiceRequest approveRequest(Long id) {
     return toResponse(entity);
 }
 
-//reject the req and save the change
+//before :reject the req and save the change
+//now: reject the req and save the reason
 @Transactional
-public ServiceRequest rejectRequest(Long id) {
+public ServiceRequest rejectRequest(Long id, RejectServiceRequest input) {
     ServiceRequestEntity entity = findRequest(id);
-    entity.reject();
+    entity.reject(input.reason());
     return toResponse(entity);
 }
 
