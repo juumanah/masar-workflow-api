@@ -50,15 +50,18 @@ public class ServiceRequestService {
         return toResponse(entity);
     }
 
-    //convert the database entity into the API response
-    private ServiceRequest toResponse(ServiceRequestEntity entity) {
-        return new ServiceRequest(
-                entity.getId(),
-                entity.getTitle(),
-                entity.getDescription(),
-                entity.getStatus()
-        );
-    }
+    //old---convert the database entity into the API response
+    //new---convert the saved entity into an API response
+private ServiceRequest toResponse(ServiceRequestEntity entity) {
+    return new ServiceRequest(
+            entity.getId(),
+            entity.getTitle(),
+            entity.getDescription(),
+            entity.getStatus(),
+            entity.getCreatedAt(),
+            entity.getDecidedAt()
+    );
+}
     //approve the req and save the change
 @Transactional
 public ServiceRequest approveRequest(Long id) {

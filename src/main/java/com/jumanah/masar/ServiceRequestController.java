@@ -29,15 +29,17 @@ public class ServiceRequestController {
     }
 
     //get req, run this method
-    @GetMapping("/api/requests/sample")
-    public ServiceRequest getSampleRequest() {
-        return new ServiceRequest(
-                1L,
-                "New laptop",
-                "A laptop for development work",
-                "SUBMITTED"
-        );
-    }
+@GetMapping("/api/requests/sample")
+ public ServiceRequest getSampleRequest() {
+    return new ServiceRequest(
+            1L,
+            "New laptop",
+            "A laptop for development work",
+            "SUBMITTED",
+            null,
+            null
+    );
+}
 
     //validate input, then let the service create and store the req
     @PostMapping("/api/requests")

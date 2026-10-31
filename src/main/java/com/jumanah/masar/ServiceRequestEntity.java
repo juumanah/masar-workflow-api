@@ -12,6 +12,9 @@ import jakarta.persistence.Table;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Instant;
+import jakarta.persistence.PrePersist;
+
 // Represents one saved req in the database
 @Entity
 @Table(name = "service_requests")
@@ -61,12 +64,14 @@ public class ServiceRequestEntity {
 public void approve() {
     ensureSubmitted();
     this.status = "APPROVED";
+    this.decidedAt = Instant.now();
 }
 
 //reject only a submitted req
 public void reject() {
     ensureSubmitted();
     this.status = "REJECTED";
+    this.decidedAt = Instant.now();
 }
 
 //prevent changing a decision already made
@@ -77,5 +82,24 @@ private void ensureSubmitted() {
                 "Only submitted requests can be approved or rejected"
         );
     }
+}
+   //when the req was created and when a decision was made
+@Column(updatable = false)
+private Instant createdAt;
+
+private Instant decidedAt;
+
+//set creation time before saving a new req
+@PrePersist
+protected void onCreate() {
+    this.createdAt = Instant.now();
+}
+
+public Instant getCreatedAt() {
+    return createdAt;
+}
+
+public Instant getDecidedAt() {
+    return decidedAt;
 }
 }
