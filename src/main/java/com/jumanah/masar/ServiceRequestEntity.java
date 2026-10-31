@@ -14,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import jakarta.persistence.PrePersist;
+import jakarta.persistence.Version;
 
 // Represents one saved req in the database
 @Entity
@@ -24,6 +25,10 @@ public class ServiceRequestEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    //prevent simultaneous decisions from overwriting each othersss
+@Version
+@Column(nullable = false, columnDefinition = "bigint default 0")
+private Long version;
 
     @Column(nullable = false, columnDefinition = "text")
     private String title;
