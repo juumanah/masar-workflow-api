@@ -62,7 +62,7 @@ public class ServiceRequestEntity {
     }
     //approve only a submitted req
 public void approve() {
-    ensureSubmitted();
+    
     this.status = "APPROVED";
     this.decidedAt = Instant.now();
 }
