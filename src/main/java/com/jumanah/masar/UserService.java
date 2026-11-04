@@ -57,4 +57,18 @@ public class UserService {
                 "Email is already registered"
         );
     }
+    //return safe details for the signedin user
+public UserResponse getCurrentUser(String email) {
+    UserEntity user = repository.findByEmail(email)
+            .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "User not found"
+            ));
+
+    return new UserResponse(
+            user.getId(),
+            user.getEmail(),
+            user.getRole()
+    );
+}
 }

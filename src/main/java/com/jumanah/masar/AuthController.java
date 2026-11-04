@@ -8,6 +8,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.web.bind.annotation.GetMapping;
+import java.security.Principal;
+
 @RestController
 public class AuthController {
 
@@ -24,4 +28,17 @@ public class AuthController {
             @Valid @RequestBody RegisterUserRequest input) {
         return service.register(input);
     }
+    //provide the csrf token for registration and login
+    @GetMapping("/api/auth/csrf")
+      public CsrfToken csrf(CsrfToken token) {
+        return token;
+      }
+      //show the signed-in account without exposing its password
+@GetMapping("/api/auth/me")
+ public UserResponse me(Principal principal) {
+    return service.getCurrentUser(principal.getName());
+
+    }
+    
 }
+

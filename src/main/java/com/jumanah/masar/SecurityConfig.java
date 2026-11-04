@@ -22,9 +22,19 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/auth/csrf").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/auth/me").authenticated()
-                //enable request routes after adding ownership checks
+                .requestMatchers(HttpMethod.POST, "/api/requests")
+                .hasRole("REQUESTER")
+                .requestMatchers(HttpMethod.POST,
+                  "/api/requests/*/approve",
+                 "/api/requests/*/reject")
+                .hasRole("APPROVER")
+                .requestMatchers(HttpMethod.GET,
+                   "/api/requests",
+                   "/api/requests/*")
+                .hasAnyRole("REQUESTER", "APPROVER")
                 .anyRequest().denyAll()
             )
+            
             .formLogin(login -> login
                 .loginProcessingUrl("/api/auth/login")
                 .usernameParameter("email")
