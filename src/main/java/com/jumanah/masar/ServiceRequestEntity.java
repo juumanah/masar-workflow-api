@@ -15,7 +15,9 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.Instant;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Version;
-
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 // Represents one saved req in the database
 @Entity
 @Table(name = "service_requests")
@@ -25,10 +27,14 @@ public class ServiceRequestEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    //the user who submitted this req; older requests have no owner
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", updatable = false)
+      private UserEntity owner;
     //prevent simultaneous decisions from overwriting each othersss
-@Version
-@Column(nullable = false, columnDefinition = "bigint default 0")
-private Long version;
+    @Version
+    @Column(nullable = false, columnDefinition = "bigint default 0")
+    private Long version;
 
     @Column(nullable = false, columnDefinition = "text")
     private String title;
@@ -49,7 +55,16 @@ private Long version;
         this.description = description;
         this.status = "SUBMITTED";
     }
+ //create a req belonging to the signedin user
+public ServiceRequestEntity(
+        String title, String description, UserEntity owner) {
+    this(title, description);
+    this.owner = java.util.Objects.requireNonNull(owner);
+}
 
+public UserEntity getOwner() {
+    return owner;
+}
     public Long getId() {
         return id;
     }
